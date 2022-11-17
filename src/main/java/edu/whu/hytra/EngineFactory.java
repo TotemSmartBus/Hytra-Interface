@@ -1,7 +1,6 @@
 package edu.whu.hytra;
 
 import edu.whu.hyk.Engine;
-import edu.whu.hyk.encoding.Decoder;
 import edu.whu.hyk.encoding.Encoder;
 import edu.whu.hyk.exp.RealtimekNN;
 import edu.whu.hyk.merge.Generator;
@@ -30,8 +29,10 @@ public class EngineFactory {
         paramsMap.put("separator", params.getSeperator());
         paramsMap.put("epsilon", params.getEpsilon());
         paramsMap.put("dataSize", params.getDataSize());
+        Engine.Params = paramsMap;
         Encoder.setup(paramsMap);
         Generator.setup(paramsMap);
+
     }
 
     /**
@@ -40,7 +41,7 @@ public class EngineFactory {
      * @param data 应用端传入的数据
      */
     public void updateIndex(List<Vehicle> data) {
-        List<Point> parsedList = data.stream().map(p -> new Point(p.getPID(), p.getLat(), p.getLon(), formater.format(p.getRecordedTime()), p.getTID())
+        List<Point> parsedList = data.stream().map(p -> new Point(p.getPID(), p.getLat(), p.getLon(), formater.format(p.getRecordedTime() * 1000), p.getTID())
         ).collect(Collectors.toList());
         Engine.buildIndex(parsedList);
     }
@@ -55,7 +56,8 @@ public class EngineFactory {
      */
     public List<Integer> searchRealtime(double lat, double lon, int k) {
         int gid = Encoder.encodeGrid(lat, lon);
-        RealtimekNN.setup(Engine.trajDataBase, Engine.Params, k);
+        Point query = new Point(lat, lon);
+        RealtimekNN.setup(Engine.trajDataBase, Engine.Params, query, k);
         // 使用 hytra 方法去搜索
         return RealtimekNN.hytra(PostingList.GT);
     }

@@ -1,6 +1,15 @@
 package edu.whu.hyk.util;
 
+import org.gavaghan.geodesy.Ellipsoid;
+import org.gavaghan.geodesy.GeodeticCalculator;
+import org.gavaghan.geodesy.GlobalCoordinates;
+
 public class GeoUtil {
+    static {
+        geodeticCalculator = new GeodeticCalculator();
+    }
+
+    private static GeodeticCalculator geodeticCalculator;
 
     /**
      * Calculate geo-distance between two points in latitude and longitude.
@@ -13,10 +22,11 @@ public class GeoUtil {
      * @return Distance in Meters
      */
     public static double distance(double lat1, double lat2, double lon1, double lon2) {
-        return distance(lat1, lat2, lon1, lon2, 0.0, 0.0);
+        return distanceByLib(lat1, lat2, lon1, lon2);
     }
 
     /**
+     * 这个方法有 bug，算出来的有 0
      * Calculate geo-distance between two points in latitude and longitude taking
      * into account height difference. Uses Haversine method as its base.
      * <p>
@@ -44,10 +54,16 @@ public class GeoUtil {
         return Math.sqrt(distance);
     }
 
+    private static double distanceByLib(double lat1, double lat2, double lon1, double lon2) {
+        GlobalCoordinates source = new GlobalCoordinates(lat1, lon1);
+        GlobalCoordinates target = new GlobalCoordinates(lat2, lon2);
+        return geodeticCalculator.calculateGeodeticCurve(Ellipsoid.WGS84, source, target).getEllipsoidalDistance();
+    }
+
     /**
      * increase the value of the current latitude.
      *
-     * @param lat 初始纬度
+     * @param lat    初始纬度
      * @param meters 增加的纬度，单位米，支持负数。
      * @return new latitude.
      */
@@ -63,7 +79,7 @@ public class GeoUtil {
     /**
      * increase the value of the current longitude.
      *
-     * @param lat 初始经度
+     * @param lat    初始经度
      * @param meters 增加的经度，单位米，支持负数。
      * @return new latitude.
      */

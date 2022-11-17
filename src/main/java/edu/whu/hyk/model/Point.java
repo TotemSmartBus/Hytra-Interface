@@ -7,7 +7,10 @@ public class Point {
     String datetime;
     int tid;
 
-    public Point (double lat, double lon){}
+    public Point (double lat, double lon){
+        this.lat = lat;
+        this.lon =lon;
+    }
 
     public Point(int pid, double lat, double lon, String datetime, int tid) {
         this.pid = pid;

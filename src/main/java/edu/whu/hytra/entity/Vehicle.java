@@ -119,7 +119,7 @@ public class Vehicle {
     }
 
     public Integer getTID() {
-        return id.hashCode();
+        return tripID.hashCode();
     }
 
 }

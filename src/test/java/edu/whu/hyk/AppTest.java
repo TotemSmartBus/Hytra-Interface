@@ -13,6 +13,8 @@ import java.util.HashMap;
  * Unit test for simple App.
  */
 public class AppTest {
+    public EngineFactory engineFactory;
+
     /**
      * 初始化引擎
      */
@@ -26,7 +28,7 @@ public class AppTest {
                 30,
                 (int) 1.2e7
         );
-        new EngineFactory(params);
+        engineFactory = new EngineFactory(params);
 
     }
 

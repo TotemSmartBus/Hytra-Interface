@@ -55,7 +55,7 @@ public class IndexingTime {
 //               PostingList.TC.get(tid).add(cid);
 //               PostingList.TP.get(tid).add(p.getPid());
 
-               PostingList.TlP.putIfAbsent(tid,p.getPid());
+               PostingList.TlP.put(tid,p.getPid());
 
                if(!PostingList.GT.containsKey(gid)){
                    PostingList.GT.put(gid, new HashSet<>());

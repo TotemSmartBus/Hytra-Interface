@@ -114,7 +114,7 @@ public class Engine {
             }
             trajDataBase.get(tid).add(p);
 
-            PostingList.TlP.putIfAbsent(tid, pid);
+            PostingList.TlP.put(tid, pid);
             // 2. 编码时间相关网格
             String cid = Encoder.encodeCube(p);
             if (cid != null) {

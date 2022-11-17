@@ -3,14 +3,12 @@ package edu.whu.hyk.exp;
 import com.github.davidmoten.rtree.Entry;
 import com.github.davidmoten.rtree.RTree;
 import com.github.davidmoten.rtree.geometry.Geometries;
-import com.github.davidmoten.rtree.geometry.Rectangle;
-
-import static com.github.davidmoten.rtree.geometry.Geometries.*;
 
 import edu.whu.hyk.encoding.Decoder;
 import edu.whu.hyk.encoding.Encoder;
 import edu.whu.hyk.model.Point;
 import edu.whu.hyk.util.GeoUtil;
+import org.gavaghan.geodesy.GeodeticCalculator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
@@ -29,15 +27,12 @@ public class RealtimekNN {
     private static HashMap<String, Object> passedParams;
     private static Point query;
 
-    public static void setup(HashMap<Integer, List<Point>> trajdb, HashMap<String, Object> params, int K) {
+    public static void setup(HashMap<Integer, List<Point>> trajdb, HashMap<String, Object> params, Point q, int K) {
         passedParams = params;
         trajDataBase = trajdb;
         k = K;
         resolution = (int) params.get("resolution");
-        int size = trajdb.size();
-        int tid = (int) trajdb.keySet().toArray()[size / 2];
-        int length = trajDataBase.get(tid).size();
-        query = trajDataBase.get(tid).get(length - 1);
+        query = q;
     }
 
     public static HashSet<Integer> IRS(double lat, double lon, int round) {
@@ -45,8 +40,8 @@ public class RealtimekNN {
         int center_gid = Encoder.encodeGrid(lat, lon);
         int[] icjc = Decoder.decodeZ2(center_gid);
         int i_s = Math.max(0, icjc[0] - round);
-        int i_e = Math.max((int) Math.pow(2, resolution) - 1, icjc[0] + round);
-        int j_s = Math.min(0, icjc[1] - round);
+        int i_e = Math.min((int) Math.pow(2, resolution) - 1, icjc[0] + round);
+        int j_s = Math.max(0, icjc[1] - round);
         int j_e = Math.min((int) Math.pow(2, resolution) - 1, icjc[1] + round);
         for (int i = i_s; i <= i_e; i++) {
             res.add(Encoder.combine2(i, j_s, resolution * 2));
@@ -70,7 +65,7 @@ public class RealtimekNN {
             public int compare(Point p1, Point p2) {
                 double d1 = GeoUtil.distance(q.getLat(), p1.getLat(), q.getLon(), p1.getLon());
                 double d2 = GeoUtil.distance(q.getLat(), p2.getLat(), q.getLon(), p2.getLon());
-                return Double.compare(d2, d1);
+                return Double.compare(d1, d2);
             }
         });
 
@@ -94,7 +89,7 @@ public class RealtimekNN {
             topk.add(Objects.requireNonNull(Q.poll()).getTid());
         }
         long end = System.currentTimeMillis();
-        logger.info("[Real-time kNN Query Time] (hytra) --- " + (end - start) / 1e3);
+        logger.info("[Real-time kNN Query Time] (hytra) --- " + (end - start) + "ms");
         return topk;
     }
 
