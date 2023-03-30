@@ -31,12 +31,4 @@ public class AppTest {
         engineFactory = new EngineFactory(params);
 
     }
-
-    /**
-     * Rigorous Test :-)
-     */
-    @Test
-    public void shouldAnswerWithTrue() {
-        assertTrue(true);
-    }
 }

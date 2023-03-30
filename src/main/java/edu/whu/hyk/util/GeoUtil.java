@@ -26,7 +26,7 @@ public class GeoUtil {
     }
 
     /**
-     * 这个方法有 bug，算出来的有 0
+     * 简易方法，不推荐使用
      * Calculate geo-distance between two points in latitude and longitude taking
      * into account height difference. Uses Haversine method as its base.
      * <p>
@@ -35,7 +35,6 @@ public class GeoUtil {
      *
      * @return Distance in Meters
      */
-
     private static double distance(double lat1, double lat2, double lon1, double lon2, double el1, double el2) {
 
         final int R = 6371; // Radius of the earth
