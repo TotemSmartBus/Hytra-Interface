@@ -26,11 +26,16 @@ public class SocketStorageManager implements StorageManager {
         return read();
     }
 
+    public String status() throws Exception {
+        write("status");
+        return read();
+    }
+
     private void write(String msg) throws Exception {
         OutputStream os = s.getOutputStream();
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
         bw.write(msg);
-        System.out.println("[socket]" + msg);
+//        System.out.println("[socket]" + msg);
         bw.flush();
     }
 
@@ -38,7 +43,7 @@ public class SocketStorageManager implements StorageManager {
         InputStream is = s.getInputStream();
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
         String mess = br.readLine();
-        System.out.println("[socket]receive " + mess);
+//        System.out.println("[socket]receive " + mess);
         return mess;
     }
 
