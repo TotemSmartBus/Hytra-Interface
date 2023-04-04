@@ -20,8 +20,6 @@ public class PostingList {
 
     public static HashMap<Integer, List<String>> mergeTC = new HashMap<>();
 
-    public static HashMap<Integer, List<Integer>> TP = new HashMap<>();
-
     public static HashMap<Integer, HashSet<Integer>> GT = new HashMap<>();
 
     public static HashMap<Integer, Integer> TlP = new HashMap<>();

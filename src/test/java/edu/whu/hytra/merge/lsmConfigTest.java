@@ -10,6 +10,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
+
 public class lsmConfigTest {
 
     @Before
@@ -22,11 +24,12 @@ public class lsmConfigTest {
     }
 
     /**
-     * 测试是否能正确获取到配置
+     * 测试是否能正确获取到配置并写入文件
      */
     @Test
-    public void generateConfigTest() {
+    public void generateConfigTest() throws IOException {
         LsmConfig config = Generator.generateConfig();
+        String fullName = config.saveTo("/Users/haoxingxiao/Downloads", "test.index");
         Assert.assertTrue(config.getMergeMap().size() > 0);
     }
 }

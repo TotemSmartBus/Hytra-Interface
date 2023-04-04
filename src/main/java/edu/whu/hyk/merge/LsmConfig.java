@@ -1,7 +1,15 @@
 package edu.whu.hyk.merge;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LsmConfig {
 
@@ -43,5 +51,45 @@ public class LsmConfig {
 
     public void setElementLengthPerLevel(Integer elementLengthPerLevel) {
         this.elementLengthPerLevel = elementLengthPerLevel;
+    }
+
+    public String saveTo(String filePath, String fileName) throws IOException {
+        String fullName = filePath + "/" + fileName;
+        File checkFile = new File(fullName);
+        if (!checkFile.exists()) {
+            checkFile.createNewFile();
+        }
+        Path path = Paths.get(fullName);
+
+        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+            writer.write("merge_map\n");
+            for (Map.Entry<String, String> entry : mergeMap.entrySet()) {
+                writer.write(entry.getKey());
+                writer.write(":");
+                writer.write(entry.getValue());
+                writer.write("\n");
+            }
+            writer.write("\n");
+            writer.write("keys_per_level\n");
+            for (Map.Entry<Integer, String> entry : keysPerLevel.entrySet()) {
+                writer.write(entry.getKey().toString());
+                writer.write(":");
+                writer.write(entry.getValue());
+                writer.write("\n");
+            }
+            writer.write("\n");
+            writer.write("element_size_threshold_per_level\n");
+            for (int i = 0; i < elementSizeThresholdPerLevel.size(); i++) {
+                writer.write(String.valueOf(i));
+                writer.write(":");
+                writer.write(String.valueOf(elementSizeThresholdPerLevel.get(i)));
+                writer.write("\n");
+            }
+            writer.write("\n");
+            writer.write("element_length_per_level\n");
+            writer.write("all:");
+            writer.write(String.valueOf(elementLengthPerLevel));
+        }
+        return fullName;
     }
 }

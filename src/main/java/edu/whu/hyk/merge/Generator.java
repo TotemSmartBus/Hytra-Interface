@@ -49,6 +49,7 @@ public class Generator {
 
     public static void generateMap() {
         //计算cube volume
+        // 每个方格有多少轨迹？ cid=date@zorder@level
         PostingList.CT.forEach((cid, idList) -> {
             String[] dzl = cid.split(sep);
             String day = dzl[0];
@@ -56,6 +57,7 @@ public class Generator {
             int level = Integer.parseInt(dzl[2]);
 
             if (!cubeVol.containsKey(day)) {
+                // 容积计算公式：size = (8^(r+1) - 1 )/ 7
                 int size = (int) (Math.pow(8, resolution + 1) - 1) / 7;
                 cubeVol.put(day, new int[size]);
             }
@@ -362,6 +364,40 @@ public class Generator {
         return config;
     }
 
+    /**
+     * 根据索引数据生成插入的 KV
+     *
+     * @return
+     */
+    public static HashMap<String, Integer> generateKV() {
+        HashMap<String, Integer> result = new HashMap<>();
+        for (Map.Entry<String, HashSet<Integer>> entry : PostingList.CP.entrySet()) {
+            String cid = entry.getKey();
+            HashSet<Integer> idList = entry.getValue();
+            String[] items = cid.split(sep);
+            String day = items[0];
+            int z = Integer.parseInt(items[1]);
+            int l = Integer.parseInt(items[2]);
+
+            //如果不用合并，直接写入
+            if (bitMap.get(day)[getOffset(z, l)] == 1) {
+                idList.forEach(id -> {
+                    result.put(cid, id);
+                });
+            } else {
+                String destination = cid;
+                while (compactionMap.containsKey(destination)) {
+                    destination = compactionMap.get(destination);
+                }
+                String finalDestination = destination;
+                idList.forEach(id -> {
+                    result.put(finalDestination, id);
+                });
+            }
+        }
+        return result;
+    }
+
     public static void writeKV(String filePath) {
         File f = new File(filePath);
         FileOutputStream out;
@@ -369,37 +405,16 @@ public class Generator {
             out = new FileOutputStream(f, false);
             OutputStreamWriter writer = new OutputStreamWriter(out, "UTF-8");
 
-
-            PostingList.CP.forEach((cid, idList) -> {
-                StringBuilder kv = new StringBuilder();
-                String[] items = cid.split(sep);
-                String day = items[0];
-                int z = Integer.parseInt(items[1]);
-                int l = Integer.parseInt(items[2]);
-
-                //如果不用合并，直接写入
-                if (bitMap.get(day)[getOffset(z, l)] == 1) {
-                    idList.forEach(id -> {
-                        kv.append("put:").append(cid).append(",").append(id).append("\n");
-                    });
-                } else {
-                    String destination = cid;
-                    while (compactionMap.containsKey(destination)) {
-                        destination = compactionMap.get(destination);
-                    }
-                    String finalDestination = destination;
-                    idList.forEach(id -> {
-                        kv.append("put:").append(finalDestination).append(",").append(id).append("\n");
-                    });
-                }
+            HashMap<String, Integer> map = generateKV();
+            StringBuilder kv = new StringBuilder();
+            map.forEach((key, value) -> {
+                kv.append("put:").append(key).append(",").append(value).append("\n");
                 try {
                     writer.write(kv.toString());
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             });
-
-
             writer.close();
 
         } catch (IOException e) {

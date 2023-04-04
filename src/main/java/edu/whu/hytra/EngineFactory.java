@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class EngineFactory {
-    private EngineParam params;
+    public EngineParam params;
 
     private Engine engine;
 
-    private static SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public EngineFactory(EngineParam params) {
         this.params = params;
@@ -41,11 +41,14 @@ public class EngineFactory {
      * @param data 应用端传入的数据
      */
     public void updateIndex(List<Vehicle> data) {
-        List<Point> parsedList = data.stream().map(p -> new Point(p.getPID(), p.getLat(), p.getLon(), formater.format(p.getRecordedTime() * 1000), p.getTID())
+        List<Point> parsedList = data.stream().map(p -> new Point(p.getPID(), p.getLat(), p.getLon(), formatter.format(p.getRecordedTime() * 1000), p.getTID())
         ).collect(Collectors.toList());
         Engine.buildIndex(parsedList);
     }
 
+    public void clearIndex() {
+        Engine.clear();
+    }
     /**
      * 对实时数据进行搜索，仅搜索 grid 上的数据,搜索到的是 PointID
      *

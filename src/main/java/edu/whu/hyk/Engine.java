@@ -177,6 +177,20 @@ public class Engine {
         }
     }
 
+    public static void clear() {
+        PostingList.TlP.clear();
+        trajDataBase.clear();
+        PostingList.CP.clear();
+        PostingList.CT.clear();
+        PostingList.TC.clear();
+        PostingList.GT.clear();
+        GT.clear();
+        TG.clear();
+        PostingList.mergeCT.clear();
+        PostingList.mergeTC.clear();
+        PostingList.mergeCP.clear();
+    }
+
     public static void writeTG(String filePath) {
         File f = new File(filePath);
         FileOutputStream out;

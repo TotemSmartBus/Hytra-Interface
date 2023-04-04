@@ -36,6 +36,7 @@ public class SocketStorageManagerTest {
         mng.put("a", "1");
         mng.put("a", "2");
         mng.put("a", "3");
+        mng.close();
     }
 
     @Test
